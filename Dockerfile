@@ -38,7 +38,16 @@ RUN apt-get update && apt-get install --no-install-recommends -y --force-yes \
     git \
     mercurial \
     zip \
-    xvfb gtk2-engines-pixbuf xfonts-cyrillic xfonts-100dpi xfonts-75dpi xfonts-base xfonts-scalable imagemagick x11-apps
+    xvfb \
+    gtk2-engines-pixbuf \
+    xfonts-cyrillic \
+    xfonts-100dpi \
+    xfonts-75dpi  \
+    xfonts-base \
+    xfonts-scalable \
+    imagemagick \
+    x11-apps \
+    openssh-client
 
 # Install PHP extensions
 RUN docker-php-ext-install -j$(nproc) bz2 &&\
