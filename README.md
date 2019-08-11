@@ -17,7 +17,7 @@ So only tag and push this one once you know there are no issues with the current
 
 ```
 $ docker-compose up --build
-$ docker exec -it pipeline-apps bash
+$ docker exec -it circleci-laravel bash
 ```
 
 ## Accessing projects

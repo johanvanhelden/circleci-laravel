@@ -9,14 +9,7 @@ ENV TZ ${TZ}
 
 RUN apt-get update && apt-get install -y gnupg apt-transport-https ca-certificates lsb-release wget
 
-RUN set -ex \
-  && for key in \
-  5072E1F5 \
-  ; do \
-  gpg --batch --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys "$key" || \
-  gpg --batch --keyserver hkp://pgp.mit.edu:80 --recv-keys "$key" || \
-  gpg --batch --keyserver hkp://pool.sks-keyservers.net:80 --recv-keys "$key" ; \
-  done; exit 0
+RUN wget -qO - https://repo.mysql.com/RPM-GPG-KEY-mysql | apt-key add -
 
 # Prepare and install mysql
 RUN echo "mysql-community-server mysql-community-server/root-pass password root" | debconf-set-selections &&\
@@ -42,7 +35,6 @@ RUN apt-get update && apt-get install --no-install-recommends -y --force-yes \
   libxml2-dev \
   libxslt1-dev \
   libbz2-dev \
-  ssmtp \
   git \
   mercurial \
   zip \
@@ -64,7 +56,6 @@ RUN echo "[mysqld]" >> /etc/mysql/conf.d/z-circleci-config.cnf && \
 # Install PHP extensions
 RUN docker-php-ext-install -j$(nproc) bz2 &&\
   docker-php-ext-install -j$(nproc) bcmath &&\
-  docker-php-ext-install -j$(nproc) mcrypt &&\
   docker-php-ext-install -j$(nproc) curl &&\
   docker-php-ext-install -j$(nproc) mbstring &&\
   docker-php-ext-install -j$(nproc) iconv &&\
@@ -100,6 +91,10 @@ RUN echo "" >> ~/.bashrc && \
   curl -o- -L https://yarnpkg.com/install.sh | bash; \
   echo "" >> ~/.bashrc && \
   echo 'export PATH="$HOME/.yarn/bin:$PATH"' >> ~/.bashrc
+
+# Install Composer
+RUN curl -sSL https://getcomposer.org/installer | php -- --filename=composer --install-dir=/usr/bin
+RUN echo 'export PATH="$HOME/.composer/vendor/bin:$PATH"' >> ~/.bashrc
 
 # Add our list of wanted packages
 COPY ./configfiles/composer.json /root/.composer/composer.json
