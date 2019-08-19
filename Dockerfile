@@ -57,6 +57,7 @@ RUN echo "[mysqld]" >> /etc/mysql/conf.d/z-circleci-config.cnf && \
 RUN docker-php-ext-install -j$(nproc) bz2 &&\
   docker-php-ext-install -j$(nproc) bcmath &&\
   docker-php-ext-install -j$(nproc) curl &&\
+  docker-php-ext-install -j$(nproc) exif &&\
   docker-php-ext-install -j$(nproc) mbstring &&\
   docker-php-ext-install -j$(nproc) iconv &&\
   docker-php-ext-install -j$(nproc) interbase &&\
