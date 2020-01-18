@@ -2,7 +2,7 @@
 
 A docker image containing all of the tools necessary to build and test a Laravel application.
 
-## Laravel Dusk Chrome Dirver
+## Laravel Dusk Chrome Driver
 
 If the image is updated, Chrome is updated as well. This might break your Dusk test if you are using an older Chrome driver.
 To make sure this does not happen, you can use artisan to download the proper Chrome driver based on this image's Chrome version.
