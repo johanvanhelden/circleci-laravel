@@ -1,6 +1,6 @@
-FROM php:7.2-cli
+FROM php:7.3-cli
 
-MAINTAINER Johan van Helden <johan@johanvanhelden.com>
+LABEL maintainer="Johan van Helden <johan@johanvanhelden.com>"
 
 RUN DEBIAN_FRONTEND=noninteractive
 
@@ -30,14 +30,16 @@ RUN apt-get update && apt-get install --no-install-recommends -y --force-yes \
   libcurl4-nss-dev \
   libc-client-dev \
   libkrb5-dev \
-  firebird-dev \
   libicu-dev \
   libxml2-dev \
   libxslt1-dev \
   libbz2-dev \
+  libzip-dev \
+  firebird-dev \
   git \
   mercurial \
   zip \
+  unzip \
   xvfb \
   gtk2-engines-pixbuf \
   xfonts-cyrillic \
@@ -83,7 +85,7 @@ RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh
   nvm install 10 &&\
   nvm install 8 &&\
   nvm install 6 &&\
-  nvm alias default 8
+  nvm alias default 10
 
 RUN echo "" >> ~/.bashrc && \
   echo 'export NVM_DIR="/root/.nvm"' >> ~/.bashrc && \
@@ -104,10 +106,17 @@ COPY ./configfiles/composer.lock /root/.composer/composer.lock
 # Install the packages
 RUN cd /root/.composer && composer install
 
+# PHPCS setup
+RUN /root/.composer/vendor/bin/phpcs --config-set installed_paths /root/.composer/vendor/phpcompatibility/php-compatibility
+
 #Install chrome - needed for Laravel Dusk
 RUN curl -sS https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
   sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list' && \
   apt-get update && apt-get install -y google-chrome-stable
+
+# For easy Laravel Dusk driver management, make an environment variable available with the Chrome version
+RUN google-chrome --version | grep -ioEh "([0-9]){2}" | head -n 1 > /root/chrome_version
+RUN echo 'export CHROME_VERSION=$(cat /root/chrome_version)' >> ~/.bashrc
 
 # Clean up APT when done
 RUN apt-get autoclean &&\
