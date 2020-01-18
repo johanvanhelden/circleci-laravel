@@ -20,7 +20,7 @@ RUN echo "mysql-community-server mysql-community-server/root-pass password root"
   dpkg -i mysql-apt-config_0.8.9-1_all.deb
 
 # Install dependencies
-RUN apt-get update && apt-get install --no-install-recommends -y --force-yes \
+RUN apt-get update && apt-get install --no-install-recommends -y \
   mysql-community-server \
   mysql-client \
   libfreetype6-dev \
@@ -49,7 +49,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y --force-yes \
   xfonts-scalable \
   imagemagick \
   x11-apps \
-  openssh-client
+  openssh-client \
+  procps
 
 # Add maximum backwards compatibility with MySQL 5.6
 RUN echo "[mysqld]" >> /etc/mysql/conf.d/z-circleci-config.cnf && \
@@ -103,10 +104,13 @@ RUN echo 'export PATH="$HOME/.composer/vendor/bin:$PATH"' >> ~/.bashrc
 COPY ./configfiles/composer.json /root/.composer/composer.json
 COPY ./configfiles/composer.lock /root/.composer/composer.lock
 
+# Copy the PHPCS fixer rules inside the container
+COPY ./configfiles/.php_cs /root/configfiles/.php_cs
+
 # Install the packages
 RUN cd /root/.composer && composer install
 
-# PHPCS setup
+# PHPCS configuration
 RUN /root/.composer/vendor/bin/phpcs --config-set installed_paths /root/.composer/vendor/phpcompatibility/php-compatibility
 
 #Install chrome - needed for Laravel Dusk

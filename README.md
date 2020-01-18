@@ -7,7 +7,11 @@ A docker image containing all of the tools necessary to build and test a Laravel
 If the image is updated, Chrome is updated as well. This might break your Dusk test if you are using an older Chrome driver.
 To make sure this does not happen, you can use artisan to download the proper Chrome driver based on this image's Chrome version.
 
-A `CHROME_VERSION` environment variable is available containing the current Chrome version (i.e. `79`).
+A `CHROME_VERSION` environment variable is available containing the current Chrome version (i.e. `79`). So you can automate downloading the proper Chrome version like this:
+
+```bash
+php artisan dusk:chrome-driver ${CHROME_VERSION}
+```
 
 ## Available tags
 - `latest`
