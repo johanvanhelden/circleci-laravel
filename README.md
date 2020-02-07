@@ -13,6 +13,14 @@ A `CHROME_VERSION` environment variable is available containing the current Chro
 php artisan dusk:chrome-driver ${CHROME_VERSION}
 ```
 
+If the platform you run Dusk on does not support reading the environment variables from the docker image, you can, for example, manually create the variable, like so:
+
+```bash
+CHROME_VERSION=$(cat /root/chrome_version)
+```
+
+Make sure you create it before running the download command.
+
 ## Available tags
 - `latest`
 
