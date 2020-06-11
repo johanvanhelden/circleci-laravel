@@ -50,7 +50,10 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   imagemagick \
   x11-apps \
   openssh-client \
-  procps
+  procps \
+  libmagickwand-dev
+
+RUN printf "\n" | pecl install imagick
 
 # Add maximum backwards compatibility with MySQL 5.6
 RUN echo "[mysqld]" >> /etc/mysql/conf.d/z-circleci-config.cnf && \
@@ -73,7 +76,8 @@ RUN docker-php-ext-install -j$(nproc) bz2 &&\
   docker-php-ext-configure imap --with-kerberos --with-imap-ssl &&\
   docker-php-ext-install imap &&\
   docker-php-ext-install mysqli pdo pdo_mysql &&\
-  docker-php-ext-install zip
+  docker-php-ext-install zip &&\
+  docker-php-ext-enable imagick
 
 RUN docker-php-ext-configure pcntl --enable-pcntl && \
   docker-php-ext-install pcntl
