@@ -19,6 +19,7 @@ exif
 fileinfo
 filter
 ftp
+gd
 hash
 iconv
 imagick
