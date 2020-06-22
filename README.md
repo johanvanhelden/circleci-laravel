@@ -2,24 +2,61 @@
 
 A docker image containing all of the tools necessary to build and test a Laravel application.
 
-## Laravel Dusk Chrome Driver
+- **PHP version:** 7.3
+- **MySQL version:** 5.7
+- **NodeJS versions:** 10, 12, 14
 
-If the image is updated, Chrome is updated as well. This might break your Dusk test if you are using an older Chrome driver.
-To make sure this does not happen, you can use artisan to download the proper Chrome driver based on this image's Chrome version.
-
-A `CHROME_VERSION` environment variable is available containing the current Chrome version (i.e. `79`). So you can automate downloading the proper Chrome version like this:
-
-```bash
-php artisan dusk:chrome-driver ${CHROME_VERSION}
+### PHP Modules:
 ```
-
-If the platform you run Dusk on does not support reading the environment variables from the docker image, you can, for example, manually create the variable, like so:
-
-```bash
-CHROME_VERSION=$(cat /root/chrome_version)
+bcmath
+bz2
+Core
+ctype
+curl
+date
+dom
+exif
+fileinfo
+filter
+ftp
+gd
+hash
+iconv
+imagick
+imap
+interbase
+intl
+json
+libxml
+mbstring
+mysqli
+mysqlnd
+openssl
+pcntl
+pcre
+PDO
+pdo_mysql
+pdo_sqlite
+Phar
+posix
+readline
+Reflection
+session
+SimpleXML
+soap
+sodium
+SPL
+sqlite3
+standard
+tokenizer
+xml
+xmlreader
+xmlrpc
+xmlwriter
+xsl
+zip
+zlib
 ```
-
-Make sure you create it before running the download command.
 
 ## Available tags
 - `latest`
@@ -56,3 +93,22 @@ Projects are mounted to `/var/www/projects`.
 
 ## Interacting with MySQL
 `mysql -u root -proot`
+
+## Laravel Dusk Chrome Driver
+
+If the image is updated, Chrome is updated as well. This might break your Dusk test if you are using an older Chrome driver.
+To make sure this does not happen, you can use artisan to download the proper Chrome driver based on this image's Chrome version.
+
+A `CHROME_VERSION` environment variable is available containing the current Chrome version (i.e. `79`). So you can automate downloading the proper Chrome version like this:
+
+```bash
+php artisan dusk:chrome-driver ${CHROME_VERSION}
+```
+
+If the platform you run Dusk on does not support reading the environment variables from the docker image, you can, for example, manually create the variable, like so:
+
+```bash
+CHROME_VERSION=$(cat /root/chrome_version)
+```
+
+Make sure you create it before running the download command.
