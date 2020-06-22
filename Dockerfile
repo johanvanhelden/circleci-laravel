@@ -4,14 +4,36 @@ LABEL maintainer="Johan van Helden <johan@johanvanhelden.com>"
 
 RUN DEBIAN_FRONTEND=noninteractive
 
+#####################################################################
+# Insert any needed files
+#####################################################################
+
+# Add our list of wanted packages
+COPY ./configfiles/composer.json /root/.composer/composer.json
+COPY ./configfiles/composer.lock /root/.composer/composer.lock
+
+# Copy the PHPCS fixer rules inside the container
+COPY ./configfiles/.php_cs /root/configfiles/.php_cs
+
+#####################################################################
+# Set environment variables
+#####################################################################
+
+# Prepare and install NVM
+ENV NVM_DIR /root/.nvm
+
+# Set the timezone
 ARG TZ=Europe/Amsterdam
 ENV TZ ${TZ}
 
-RUN apt-get update && apt-get install -y gnupg apt-transport-https ca-certificates lsb-release wget
+#####################################################################
+# Run the commands
+#####################################################################
 
-RUN wget -qO - https://repo.mysql.com/RPM-GPG-KEY-mysql | apt-key add -
+# Prepare MySQL 5.7
+RUN apt update && apt install -y gnupg apt-transport-https ca-certificates lsb-release wget &&\ 
+  wget -qO - https://repo.mysql.com/RPM-GPG-KEY-mysql | apt-key add -
 
-# Prepare and install mysql
 RUN echo "mysql-community-server mysql-community-server/root-pass password root" | debconf-set-selections &&\
   echo "mysql-community-server mysql-community-server/re-root-pass password root" | debconf-set-selections &&\
   echo "mysql-apt-config mysql-apt-config/select-server select mysql-5.7" | debconf-set-selections &&\
@@ -20,7 +42,7 @@ RUN echo "mysql-community-server mysql-community-server/root-pass password root"
   dpkg -i mysql-apt-config_0.8.9-1_all.deb
 
 # Install dependencies
-RUN apt-get update && apt-get install --no-install-recommends -y \
+RUN apt update && apt install --no-install-recommends -y \
   mysql-community-server \
   mysql-client \
   libfreetype6-dev \
@@ -37,7 +59,6 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   libzip-dev \
   firebird-dev \
   git \
-  mercurial \
   zip \
   unzip \
   xvfb \
@@ -53,6 +74,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   procps \
   libmagickwand-dev
 
+# Install imagick
 RUN printf "\n" | pecl install imagick
 
 # Add maximum backwards compatibility with MySQL 5.6
@@ -77,21 +99,19 @@ RUN docker-php-ext-install -j$(nproc) bz2 &&\
   docker-php-ext-install imap &&\
   docker-php-ext-install mysqli pdo pdo_mysql &&\
   docker-php-ext-install zip &&\
-  docker-php-ext-enable imagick
-
-RUN docker-php-ext-configure pcntl --enable-pcntl && \
+  docker-php-ext-enable imagick &&\
+  docker-php-ext-configure pcntl --enable-pcntl && \
   docker-php-ext-install pcntl
 
-# Prepare and install NVM
-ENV NVM_DIR /root/.nvm
-
+# Install NVM
 RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash &&\
   . /root/.nvm/nvm.sh &&\
+  nvm install 14 &&\
+  nvm install 12 &&\
   nvm install 10 &&\
-  nvm install 8 &&\
-  nvm install 6 &&\
   nvm alias default 10
 
+# Set NVM in bashrc and install yarn
 RUN echo "" >> ~/.bashrc && \
   echo 'export NVM_DIR="/root/.nvm"' >> ~/.bashrc && \
   echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm' >> ~/.bashrc \
@@ -100,34 +120,20 @@ RUN echo "" >> ~/.bashrc && \
   echo "" >> ~/.bashrc && \
   echo 'export PATH="$HOME/.yarn/bin:$PATH"' >> ~/.bashrc
 
-# Install Composer
-RUN curl -sSL https://getcomposer.org/installer | php -- --filename=composer --install-dir=/usr/bin
-RUN echo 'export PATH="$HOME/.composer/vendor/bin:$PATH"' >> ~/.bashrc
+# Install composer, install packaes and set PHPCS
+RUN curl -sSL https://getcomposer.org/installer | php -- --filename=composer --install-dir=/usr/bin &&\
+  echo 'export PATH="$HOME/.composer/vendor/bin:$PATH"' >> ~/.bashrc &&\
+  cd /root/.composer && composer install &&\
+  /root/.composer/vendor/bin/phpcs --config-set installed_paths /root/.composer/vendor/phpcompatibility/php-compatibility
 
-# Add our list of wanted packages
-COPY ./configfiles/composer.json /root/.composer/composer.json
-COPY ./configfiles/composer.lock /root/.composer/composer.lock
-
-# Copy the PHPCS fixer rules inside the container
-COPY ./configfiles/.php_cs /root/configfiles/.php_cs
-
-# Install the packages
-RUN cd /root/.composer && composer install
-
-# PHPCS configuration
-RUN /root/.composer/vendor/bin/phpcs --config-set installed_paths /root/.composer/vendor/phpcompatibility/php-compatibility
-
-#Install chrome - needed for Laravel Dusk
+# Install chrome - needed for Laravel Dusk
+# For easy Laravel Dusk driver management, make an environment variable available with the Chrome version
 RUN curl -sS https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
   sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list' && \
-  apt-get update && apt-get install -y google-chrome-stable
-
-# For easy Laravel Dusk driver management, make an environment variable available with the Chrome version
-RUN google-chrome --version | grep -ioEh "([0-9]){2}" | head -n 1 > /root/chrome_version
-RUN echo 'export CHROME_VERSION=$(cat /root/chrome_version)' >> ~/.bashrc
+  apt update && apt install -y google-chrome-stable &&\
+  google-chrome --version | grep -ioEh "([0-9]){2}" | head -n 1 > /root/chrome_version &&\
+  echo 'export CHROME_VERSION=$(cat /root/chrome_version)' >> ~/.bashrc
 
 # Clean up APT when done
-RUN apt-get autoclean &&\
-  apt-get clean &&\
-  apt-get autoremove &&\
+RUN apt autoclean && apt clean && apt autoremove &&\
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
