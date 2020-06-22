@@ -6,6 +6,58 @@ A docker image containing all of the tools necessary to build and test a Laravel
 - **MySQL version:** 5.7
 - **NodeJS versions:** 10, 12, 14
 
+### PHP Modules:
+```
+bcmath
+bz2
+Core
+ctype
+curl
+date
+dom
+exif
+fileinfo
+filter
+ftp
+gd
+hash
+iconv
+imagick
+imap
+interbase
+intl
+json
+libxml
+mbstring
+mysqli
+mysqlnd
+openssl
+pcntl
+pcre
+PDO
+pdo_mysql
+pdo_sqlite
+Phar
+posix
+readline
+Reflection
+session
+SimpleXML
+soap
+sodium
+SPL
+sqlite3
+standard
+tokenizer
+xml
+xmlreader
+xmlrpc
+xmlwriter
+xsl
+zip
+zlib
+```
+
 ## Available tags
 - `latest`
 
