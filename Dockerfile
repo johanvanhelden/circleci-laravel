@@ -45,13 +45,15 @@ RUN apt update && apt install  --no-install-recommends -y gnupg apt-transport-ht
 
 # Install dependencies
 RUN apt update && apt install --no-install-recommends -y \
+  git \
+  libpng-dev \
   mysql-community-server \
   mysql-client \
-  libpng-dev \
-  git \
-  zip \
+  openssh-client \
   unzip \
-  openssh-client &&\
+  xvfb \
+  zip \
+  &&\
   rm -rf /var/lib/apt/lists/* 
 
 # Add maximum backwards compatibility with MySQL 5.6
