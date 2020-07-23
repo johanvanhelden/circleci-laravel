@@ -73,6 +73,7 @@ RUN install-php-extensions \
   intl \
   mysqli \
   pcntl \
+  pcov \
   pdo_mysql \
   soap \
   xmlrpc \
