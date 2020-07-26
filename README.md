@@ -2,7 +2,7 @@
 
 A docker image containing all of the tools necessary to build and test a Laravel application.
 
-- **PHP version:** 7.3
+- **PHP version:** 7.4
 - **MySQL version:** 5.7
 - **NodeJS versions:** 10, 12, 14
 
@@ -70,7 +70,7 @@ $ docker build ./ --tag johanvanhelden/circleci-laravel:TAG
 $ docker push johanvanhelden/circleci-laravel:TAG
 ```
 
-Replace `TAG` with either develop or latest. 
+Replace `TAG` with either develop or latest.
 
 ## Development
 

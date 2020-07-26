@@ -69,6 +69,7 @@ return PhpCsFixer\Config::create()
         'phpdoc_trim'                                 => true,
         'phpdoc_types'                                => true,
         'phpdoc_var_without_name'                     => true,
+        'return_type_declaration'                     => ['space_before' => 'none'],
         'self_accessor'                               => true,
         'short_scalar_cast'                           => true,
         'single_blank_line_before_namespace'          => true,
