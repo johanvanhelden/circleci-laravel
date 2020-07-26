@@ -15,9 +15,6 @@ COPY ./configfiles/composer.lock /root/.composer/composer.lock
 # Add the PHP extension installer
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/
 
-# Copy the PHPCS fixer rules inside the container
-COPY ./configfiles/.php_cs /root/configfiles/.php_cs
-
 #####################################################################
 # Set environment variables
 #####################################################################
@@ -80,7 +77,6 @@ RUN install-php-extensions \
     zip \
     &&\
     docker-php-ext-install iconv &&\
-    docker-php-ext-install mbstring &&\
     docker-php-ext-install pdo
 
 

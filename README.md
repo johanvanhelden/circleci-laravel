@@ -24,7 +24,6 @@ hash
 iconv
 imagick
 imap
-interbase
 intl
 json
 libxml
@@ -33,6 +32,7 @@ mysqli
 mysqlnd
 openssl
 pcntl
+pcov
 pcre
 PDO
 pdo_mysql
